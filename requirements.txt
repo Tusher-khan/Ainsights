@@ -1,0 +1,33 @@
+# AInsight — AI-Powered Business Analytics
+
+# --- core web stack ---------------------------------------------------------
+Flask
+Werkzeug
+python-dotenv
+
+# --- data processing --------------------------------------------------------
+pandas
+numpy
+openpyxl
+XlsxWriter
+chardet
+
+# --- structured output validation -------------------------------------------
+pydantic
+
+# --- SQL safety -------------------------------------------------------------
+sqlglot
+
+# --- AI orchestration -------------------------------------------------------
+langchain
+langchain-core
+langgraph
+requests
+tenacity
+
+# --- RAG --------------------------------------------------------------------
+chromadb
+scikit-learn
+
+# --- testing ----------------------------------------------------------------
+pytest

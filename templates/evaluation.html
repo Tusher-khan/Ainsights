@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Evaluation · AInsight{% endblock %}
+{% block heading %}Evaluation{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h2>Measured behaviour</h2>
+  <p>A fixed benchmark suite runs through the live pipeline. Answers are checked against ground truth computed independently in pandas, so a plausible-looking wrong number still counts as wrong.</p>
+</div>
+
+<div class="card card-pad" style="margin-bottom:var(--sp-5)">
+  <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center">
+    <label class="visually-hidden" for="eval-dataset">Dataset</label>
+    <select class="select" id="eval-dataset"></select>
+    <button class="btn btn-primary" id="run-benchmark">Run benchmark</button>
+    <button class="btn" id="run-experiments">Run ablation experiments</button>
+    <span class="small muted" id="eval-note"></span>
+  </div>
+</div>
+
+<div id="eval-output"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  'use strict';
+  const { api, duration, escapeHtml, toast } = AInsight;
+  const output = document.getElementById('eval-output');
+
+  function pct(value) { return value === null || value === undefined ? '—' : `${value}%`; }
+  function bar(value, invert = false) {
+    if (value === null || value === undefined) return '';
+    const cls = invert ? (value > 0 ? 'bad' : 'good') : (value >= 80 ? 'good' : '');
+    return `<div class="bar-track"><div class="bar-fill ${cls}" style="width:${Math.min(100, value)}%"></div></div>`;
+  }
+  function metric(k, v, barValue, invert) {
+    return `<div class="card metric"><span class="k">${k}</span><span class="v">${v}</span>${bar(barValue, invert)}</div>`;
+  }
+
+  async function runBenchmark() {
+    output.innerHTML = '<div class="card card-pad"><div class="skeleton" style="width:45%"></div></div>';
+    try {
+      const data = await api.post('/api/evaluation/run', { dataset_id: document.getElementById('eval-dataset').value || null });
+      const s = data.summary;
+      output.innerHTML = `
+        <div class="metric-strip">
+          ${metric('Query success rate', pct(s.query_success_rate), s.query_success_rate)}
+          ${metric('Intent accuracy', pct(s.intent_accuracy), s.intent_accuracy)}
+          ${metric('Operation accuracy', pct(s.operation_accuracy), s.operation_accuracy)}
+          ${metric('Answer accuracy', pct(s.answer_accuracy), s.answer_accuracy)}
+          ${metric('Visualization accuracy', pct(s.visualization_accuracy), s.visualization_accuracy)}
+          ${metric('Hallucination rate', pct(s.hallucination_rate), s.hallucination_rate, true)}
+          ${metric('Security block rate', pct(s.security_block_rate), s.security_block_rate)}
+          ${metric('Error rate', pct(s.error_rate), s.error_rate, true)}
+          ${metric('Average latency', duration(s.avg_latency_ms))}
+          ${metric('p95 latency', duration(s.p95_latency_ms))}
+        </div>
+        <div class="card" style="margin-top:1.25rem">
+          <div class="card-head"><h3>Per-question results — ${escapeHtml(data.dataset)}</h3></div>
+          ${AInsight.renderTable(
+            ['id','question','difficulty','intent','intent_match','operation_match','answer_match','latency_ms','error'],
+            data.rows.map((r) => ({
+              id: r.id, question: r.question, difficulty: r.difficulty, intent: r.intent || '—',
+              intent_match: mark(r.intent_match), operation_match: mark(r.operation_match),
+              answer_match: mark(r.answer_match), latency_ms: r.latency_ms, error: r.error || '',
+            })), 60)}
+        </div>`;
+    } catch (e) { output.innerHTML = `<div class="card card-pad"><p class="muted">${escapeHtml(e.message)}</p></div>`; }
+  }
+
+  function mark(value) {
+    if (value === null || value === undefined) return 'n/a';
+    return value ? 'pass' : 'fail';
+  }
+
+  async function runExperiments() {
+    output.innerHTML = '<div class="card card-pad"><div class="skeleton" style="width:55%"></div></div>';
+    try {
+      const data = await api.post('/api/evaluation/experiments', { dataset_id: document.getElementById('eval-dataset').value || null });
+      output.innerHTML = `
+        <div class="card">
+          <div class="card-head"><h3>Configuration comparison — ${escapeHtml(data.dataset)}, ${data.question_count} questions</h3></div>
+          ${AInsight.renderTable(
+            ['Configuration','Success %','Intent %','Operation %','Answer %','Hallucination %','Error %','Avg latency (ms)'],
+            data.configurations.map((c) => ({
+              'Configuration': c.name,
+              'Success %': c.query_success_rate, 'Intent %': c.intent_accuracy,
+              'Operation %': c.operation_accuracy, 'Answer %': c.answer_accuracy,
+              'Hallucination %': c.hallucination_rate, 'Error %': c.error_rate,
+              'Avg latency (ms)': c.avg_latency_ms,
+            })), 20)}
+          <div class="card-pad"><p class="small muted">${escapeHtml(data.note)}</p></div>
+        </div>`;
+    } catch (e) { output.innerHTML = `<div class="card card-pad"><p class="muted">${escapeHtml(e.message)}</p></div>`; }
+  }
+
+  document.getElementById('run-benchmark').addEventListener('click', runBenchmark);
+  document.getElementById('run-experiments').addEventListener('click', runExperiments);
+  document.addEventListener('DOMContentLoaded', async () => {
+    await AInsight.loadDatasetOptions('eval-dataset', { includeAll: true });
+    try {
+      const q = await api.get('/api/evaluation/questions');
+      document.getElementById('eval-note').textContent = `${q.count} benchmark questions loaded`;
+    } catch (e) {}
+  });
+})();
+</script>
+{% endblock %}

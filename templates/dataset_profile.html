@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Dataset profile · AInsight{% endblock %}
+{% block heading %}Dataset profile{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h2 id="ds-name">Loading…</h2>
+  <p id="ds-sub"></p>
+</div>
+
+<div class="profile-tabs" role="tablist">
+  <button class="profile-tab active" role="tab" data-panel="overview" aria-selected="true">Overview</button>
+  <button class="profile-tab" role="tab" data-panel="columns" aria-selected="false">Columns</button>
+  <button class="profile-tab" role="tab" data-panel="quality" aria-selected="false">Data quality</button>
+  <button class="profile-tab" role="tab" data-panel="statistics" aria-selected="false">Statistics</button>
+  <button class="profile-tab" role="tab" data-panel="sample" aria-selected="false">Sample data</button>
+  <button class="profile-tab" role="tab" data-panel="questions" aria-selected="false">Suggested questions</button>
+</div>
+
+<div class="tab-panel" id="panel-overview"></div>
+<div class="tab-panel" id="panel-columns" hidden></div>
+<div class="tab-panel" id="panel-quality" hidden></div>
+<div class="tab-panel" id="panel-statistics" hidden></div>
+<div class="tab-panel" id="panel-sample" hidden></div>
+<div class="tab-panel" id="panel-questions" hidden></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  'use strict';
+  const { api, integer, bytes, escapeHtml, renderTable, when } = AInsight;
+  const datasetId = {{ dataset_id | tojson }};
+
+  document.querySelectorAll('.profile-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.profile-tab').forEach((t) => {
+        t.classList.remove('active'); t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('active'); tab.setAttribute('aria-selected', 'true');
+      document.querySelectorAll('.tab-panel').forEach((p) => { p.hidden = true; });
+      document.getElementById(`panel-${tab.dataset.panel}`).hidden = false;
+    });
+  });
+
+  function metric(k, v) {
+    return `<div class="card metric"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+  }
+
+  async function load() {
+    try {
+      const d = await api.get(`/api/datasets/${datasetId}`);
+      const p = d.profile || {};
+      document.getElementById('ds-name').textContent = d.name;
+      document.getElementById('ds-sub').textContent =
+        `${p.source_type === 'excel' ? 'Excel workbook' : 'CSV dataset'} · ${integer(d.row_count)} rows · ${integer(d.column_count)} columns · updated ${when(d.updated_at)}`;
+
+      document.getElementById('panel-overview').innerHTML = `
+        <div class="metric-strip">
+          ${metric('Rows', integer(d.row_count))}
+          ${metric('Columns', integer(d.column_count))}
+          ${metric('Measures', integer((p.measures || []).length))}
+          ${metric('Dimensions', integer((p.dimensions || []).length))}
+          ${metric('Date columns', integer((p.date_columns || []).length))}
+          ${metric('File size', bytes(d.size_bytes))}
+        </div>
+        <div style="display:flex;gap:.5rem;margin-top:1.25rem;flex-wrap:wrap">
+          <a class="btn btn-primary" href="/chat?dataset=${d.id}">Ask AInsight about this dataset</a>
+          <a class="btn" href="/datasets">All datasets</a>
+        </div>`;
+
+      const columns = (p.columns || []).map((c) => ({
+        Column: c.name, Type: c.semantic_type, 'Stored as': c.dtype,
+        'Null %': c.null_percentage, Distinct: c.unique_count,
+        Samples: (c.sample_values || []).slice(0, 3).join(', '),
+        Description: c.description,
+      }));
+      document.getElementById('panel-columns').innerHTML =
+        `<div class="card card-pad">${renderTable(['Column','Type','Stored as','Null %','Distinct','Samples','Description'], columns, 300)}</div>`;
+
+      const q = p.quality || {};
+      document.getElementById('panel-quality').innerHTML = `
+        <div class="metric-strip">
+          ${metric('Quality score', q.score ?? '—')}
+          ${metric('Missing cells', integer(q.missing_cells || 0))}
+          ${metric('Missing %', (q.missing_percentage ?? 0) + '%')}
+          ${metric('Duplicate rows', integer(q.duplicate_rows || 0))}
+          ${metric('Complete columns', integer(q.complete_columns || 0))}
+        </div>
+        <div class="card card-pad" style="margin-top:1rem">
+          <label>Completeness</label>
+          <div class="quality-bar"><div class="fill" style="width:${Math.max(0, 100 - (q.missing_percentage || 0))}%"></div></div>
+          <p class="small muted" style="margin-top:.75rem">Missing values are left blank in results rather than filled with zeros, so totals are never inflated.</p>
+        </div>`;
+
+      const stats = p.statistics || {};
+      const statRows = Object.keys(stats).map((col) => Object.assign({ Column: col }, stats[col]));
+      document.getElementById('panel-statistics').innerHTML = statRows.length
+        ? `<div class="card card-pad">${renderTable(null, statRows, 100)}</div>`
+        : '<div class="card empty"><h3>No numeric columns</h3><p>Descriptive statistics need at least one numeric column.</p></div>';
+
+      document.getElementById('panel-sample').innerHTML =
+        `<div class="card card-pad">${renderTable(p.column_names, p.sample_rows || [], 10)}</div>`;
+
+      document.getElementById('panel-questions').innerHTML = `
+        <div class="card card-pad">
+          <div class="suggestions">
+            ${(d.suggested_questions || []).map((s) => `
+              <a class="suggestion" href="/chat?dataset=${d.id}&q=${encodeURIComponent(s)}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                ${escapeHtml(s)}
+              </a>`).join('')}
+          </div>
+          <p class="small muted" style="margin-top:1rem">These are generated from this dataset's own columns, so every one of them is answerable.</p>
+        </div>`;
+    } catch (e) {
+      document.getElementById('panel-overview').innerHTML =
+        `<div class="card empty"><h3>Dataset unavailable</h3><p>${escapeHtml(e.message)}</p><a class="btn" href="/datasets">Back to datasets</a></div>`;
+    }
+  }
+  document.addEventListener('DOMContentLoaded', load);
+})();
+</script>
+{% endblock %}

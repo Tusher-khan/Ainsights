@@ -1,0 +1,62 @@
+/* ==========================================================================
+   Datasets, upload and dataset profile
+   ========================================================================== */
+
+.dataset-grid { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+
+.dataset-card { display: flex; flex-direction: column; }
+.dataset-card .body { padding: var(--sp-5); flex: 1; }
+.dataset-card .title { display: flex; align-items: flex-start; gap: var(--sp-3); margin-bottom: var(--sp-1); }
+.dataset-card h3 { font-size: var(--step-1); margin: 0; word-break: break-word; }
+.dataset-card .kind { font-size: var(--step--1); color: var(--ink-3); margin-bottom: var(--sp-4); }
+.dataset-card .figures { display: flex; gap: var(--sp-5); margin-bottom: var(--sp-3); }
+.dataset-card .figures .f .n { font-size: var(--step-2); font-weight: 600; font-variant-numeric: tabular-nums; display: block; line-height: 1.1; }
+.dataset-card .figures .f .k { font-size: var(--step--1); color: var(--ink-4); }
+.dataset-card .cols { display: flex; flex-wrap: wrap; gap: 4px; }
+.dataset-card .actions {
+  display: flex; gap: var(--sp-2); padding: var(--sp-3) var(--sp-5);
+  border-top: 1px solid var(--line); background: var(--surface-2); flex-wrap: wrap;
+}
+.dataset-card .actions .spacer { margin-left: auto; }
+
+/* --- upload -------------------------------------------------------------- */
+
+.dropzone {
+  border: 1.5px dashed var(--line-strong); border-radius: var(--r-xl);
+  background: var(--surface); padding: var(--sp-8) var(--sp-5);
+  text-align: center; transition: border-color .15s, background .15s;
+}
+.dropzone.dragging { border-color: var(--accent); background: var(--accent-soft); }
+.dropzone h3 { font-size: var(--step-2); margin-bottom: var(--sp-2); }
+.dropzone p { color: var(--ink-3); margin-bottom: var(--sp-4); }
+.dropzone .glyph { color: var(--ink-4); margin-bottom: var(--sp-4); }
+.dropzone .formats { font-size: var(--step--1); color: var(--ink-4); margin-top: var(--sp-4); }
+
+.upload-progress { height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; margin: var(--sp-4) 0; }
+.upload-progress .fill { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+
+.file-summary { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+.file-summary .item .k { font-size: var(--step--1); color: var(--ink-4); display: block; }
+.file-summary .item .v { font-size: var(--step-1); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* --- profile ------------------------------------------------------------- */
+
+.profile-tabs {
+  display: flex; gap: var(--sp-1); border-bottom: 1px solid var(--line);
+  margin-bottom: var(--sp-5);
+}
+.profile-tab {
+  padding: var(--sp-3) var(--sp-4); border: 0; background: none; font: inherit;
+  font-size: var(--step-0); font-weight: 550; color: var(--ink-3); cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap;
+}
+.profile-tab:hover { color: var(--ink); }
+.profile-tab.active { color: var(--accent-deep); border-bottom-color: var(--accent); }
+.tab-panel[hidden] { display: none; }
+
+.quality-bar { height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.quality-bar .fill { height: 100%; background: var(--verified); border-radius: 999px; }
+
+.column-type { font-size: 0.7rem; padding: 1px 7px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-3); }
+.column-type.numeric { background: var(--accent-soft); color: var(--accent-deep); border-color: transparent; }
+.column-type.datetime { background: var(--verified-soft); color: var(--verified); border-color: transparent; }

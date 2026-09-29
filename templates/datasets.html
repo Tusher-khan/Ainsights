@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Datasets · AInsight{% endblock %}
+{% block heading %}Datasets{% endblock %}
+{% block topbar %}<a class="btn btn-primary btn-sm" href="/upload">Upload dataset</a>{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h2>Your data sources</h2>
+  <p>Every dataset is profiled on upload, so AInsight knows its columns, types and quality before it answers anything.</p>
+</div>
+
+<div class="dataset-grid" id="dataset-grid"></div>
+
+<div id="tables-section" hidden>
+  <div class="section-head"><h3>Database tables</h3></div>
+  <div class="card" id="tables-list"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/datasets.js') }}"></script>
+{% endblock %}

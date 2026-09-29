@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Query history · AInsight{% endblock %}
+{% block heading %}Query History{% endblock %}
+{% block topbar %}<button class="btn btn-sm btn-danger" id="clear-history">Clear history</button>{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h2>Everything you have asked</h2>
+  <p>Each entry records the dataset, the operation that ran, how long it took and whether it succeeded.</p>
+</div>
+<div class="card" id="history-list"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/history.js') }}"></script>
+{% endblock %}

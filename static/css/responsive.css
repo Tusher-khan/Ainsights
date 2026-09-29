@@ -1,0 +1,60 @@
+/* ==========================================================================
+   Responsive behaviour: sidebar becomes a drawer, cards stack, tables scroll.
+   ========================================================================== */
+
+.drawer-scrim {
+  position: fixed; inset: 0; background: rgba(15, 27, 45, .45);
+  z-index: 39; backdrop-filter: blur(1px);
+}
+
+#drawer-toggle { display: none; }
+
+@media (max-width: 1024px) {
+  .content { padding: var(--sp-5) var(--sp-4) var(--sp-7); }
+  .chat-scroll { padding: var(--sp-4) var(--sp-4) var(--sp-3); }
+  .composer-wrap { padding: var(--sp-3) var(--sp-4) var(--sp-4); }
+}
+
+@media (max-width: 860px) {
+  #drawer-toggle { display: inline-flex; }
+
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    transform: translateX(-100%); transition: transform .2s ease;
+    width: var(--sidebar-w); flex-basis: var(--sidebar-w);
+    box-shadow: var(--shadow-lg);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar.collapsed { width: var(--sidebar-w); flex-basis: var(--sidebar-w); }
+  .sidebar.collapsed .brand-name, .sidebar.collapsed .nav-item span, .sidebar.collapsed .nav-section { display: revert; }
+  .sidebar.collapsed .nav-item { justify-content: flex-start; padding: var(--sp-2) var(--sp-3); }
+  .sidebar-foot { display: none; }
+
+  .topbar { padding: 0 var(--sp-4); }
+  .topbar h1 { font-size: var(--step-0); }
+
+  .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .turn-question { max-width: 92%; }
+  .record-headline .value { font-size: var(--step-4); }
+  .source-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+  .chat-bar { padding: var(--sp-3) var(--sp-4); }
+  .chat-bar .select { max-width: 100%; flex: 1 1 200px; }
+  .dataset-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: var(--step-4); }
+}
+
+@media (max-width: 520px) {
+  :root { --header-h: 56px; }
+  .content { padding: var(--sp-4) var(--sp-3) var(--sp-6); }
+  .kpi-value { font-size: var(--step-3); }
+  .record-section { padding: var(--sp-3) var(--sp-4); }
+  .record-foot { padding: var(--sp-3) var(--sp-4); }
+  .sql-body { padding: 0 var(--sp-4) var(--sp-3); }
+  .sql-body .copy { right: calc(var(--sp-4) + 8px); }
+  .chat-bar-spacer { display: none; }
+  .suggestions { grid-template-columns: 1fr; }
+  .profile-tabs { overflow-x: auto; }
+}
+
+/* Nothing may overflow the page horizontally. */
+html, body { max-width: 100%; overflow-x: hidden; }

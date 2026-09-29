@@ -1,0 +1,101 @@
+/* ==========================================================================
+   Dashboard and landing page
+   ========================================================================== */
+
+.welcome-band {
+  display: flex; align-items: flex-start; gap: var(--sp-5);
+  padding: var(--sp-6); margin-bottom: var(--sp-6);
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-xl); box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+.welcome-band .copy { flex: 1 1 380px; min-width: 0; }
+.welcome-band h2 { font-size: var(--step-3); margin-bottom: var(--sp-2); }
+.welcome-band p { color: var(--ink-3); max-width: 58ch; margin-bottom: var(--sp-4); }
+.welcome-band .actions { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+
+.section-head {
+  display: flex; align-items: baseline; gap: var(--sp-3);
+  margin: var(--sp-6) 0 var(--sp-3);
+}
+.section-head h3 { font-size: var(--step-1); }
+.section-head a { margin-left: auto; font-size: var(--step--1); }
+
+.activity-row {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--line);
+  font-size: var(--step--1);
+}
+.activity-row:last-child { border-bottom: 0; }
+.activity-row .q { flex: 1; min-width: 0; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.activity-row .meta { color: var(--ink-4); white-space: nowrap; }
+
+/* --- landing page -------------------------------------------------------- */
+
+.landing { max-width: 1120px; margin: 0 auto; padding: var(--sp-5) var(--sp-5) var(--sp-8); }
+.landing-nav { display: flex; align-items: center; padding: var(--sp-4) 0 var(--sp-7); }
+.landing-nav .actions { margin-left: auto; display: flex; gap: var(--sp-3); align-items: center; }
+
+.hero { padding: var(--sp-6) 0 var(--sp-7); max-width: 62ch; }
+.hero h1 {
+  font-size: clamp(2.25rem, 6vw, 3.5rem); line-height: 1.05;
+  letter-spacing: -0.04em; margin-bottom: var(--sp-4);
+}
+.hero p { font-size: var(--step-1); color: var(--ink-2); margin-bottom: var(--sp-3); }
+.hero .support { color: var(--ink-3); font-size: var(--step-0); margin-bottom: var(--sp-5); }
+.hero .actions { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+
+/* The hero demo: a real question resolving into a verified figure. */
+.hero-demo {
+  margin: var(--sp-6) 0 var(--sp-7);
+  border: 1px solid var(--line); border-radius: var(--r-xl);
+  background: var(--surface); box-shadow: var(--shadow-md); overflow: hidden;
+  max-width: 720px;
+}
+.hero-demo .ask {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--line);
+  color: var(--ink-2); font-size: var(--step-0);
+}
+.hero-demo .ask .caret {
+  width: 2px; height: 1.1em; background: var(--accent);
+  animation: blink 1.1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+.hero-demo .answer { padding: var(--sp-5); display: flex; align-items: baseline; gap: var(--sp-4); flex-wrap: wrap; }
+.hero-demo .answer .figure {
+  font-size: var(--step-5); font-weight: 600; letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums; line-height: 1;
+}
+.hero-demo .answer .caption { color: var(--ink-3); font-size: var(--step--1); }
+.hero-demo .strip {
+  display: flex; gap: var(--sp-4); flex-wrap: wrap;
+  padding: var(--sp-3) var(--sp-5); background: var(--surface-2);
+  border-top: 1px solid var(--line); font-size: var(--step--1);
+}
+
+.feature-grid { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.feature { padding: var(--sp-5); }
+.feature h3 { font-size: var(--step-0); margin-bottom: var(--sp-2); }
+.feature p { color: var(--ink-3); font-size: var(--step--1); margin: 0; }
+.feature .glyph {
+  width: 34px; height: 34px; border-radius: var(--r-md);
+  background: var(--accent-soft); color: var(--accent-deep);
+  display: grid; place-items: center; margin-bottom: var(--sp-3);
+}
+
+.landing-foot {
+  margin-top: var(--sp-8); padding-top: var(--sp-5);
+  border-top: 1px solid var(--line); color: var(--ink-4); font-size: var(--step--1);
+}
+
+/* --- evaluation ---------------------------------------------------------- */
+
+.metric-strip { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.metric { padding: var(--sp-4); }
+.metric .k { font-size: var(--step--1); color: var(--ink-3); display: block; margin-bottom: 4px; }
+.metric .v { font-size: var(--step-2); font-weight: 600; font-variant-numeric: tabular-nums; }
+.bar-track { height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; margin-top: 6px; }
+.bar-fill { height: 100%; background: var(--accent); border-radius: 999px; }
+.bar-fill.good { background: var(--verified); }
+.bar-fill.bad { background: var(--danger); }

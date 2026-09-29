@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}System · AInsight{% endblock %}
+{% block heading %}System{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h2>What is running</h2>
+  <p>AInsight reports the exact components active in this environment, so results can be reproduced and cited.</p>
+</div>
+<div id="system-output"><div class="card card-pad"><div class="skeleton" style="width:40%"></div></div></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  'use strict';
+  const { api, integer, escapeHtml } = AInsight;
+
+  function rows(obj) {
+    return Object.entries(obj).map(([k, v]) => `
+      <div class="activity-row">
+        <span class="q">${escapeHtml(k.replace(/_/g, ' '))}</span>
+        <span class="meta">${escapeHtml(typeof v === 'boolean' ? (v ? 'yes' : 'no') : String(v))}</span>
+      </div>`).join('');
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const output = document.getElementById('system-output');
+    try {
+      const s = await api.get('/api/system');
+      output.innerHTML = `
+        <div class="card" style="margin-bottom:1.25rem">
+          <div class="card-head"><h3>Active components</h3></div>
+          ${rows(s.components)}
+        </div>
+        <div class="card" style="margin-bottom:1.25rem">
+          <div class="card-head"><h3>Configuration</h3></div>
+          ${rows(s.configuration)}
+          <div class="card-pad"><p class="small muted">API keys are never displayed, logged or sent to the browser — only whether one is configured.</p></div>
+        </div>
+        <div class="card" style="margin-bottom:1.25rem">
+          <div class="card-head"><h3>Language model</h3></div>
+          ${rows(s.llm)}
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Academic information</h3></div>
+          <div class="card-pad">
+            <p><strong>${escapeHtml(s.application.name)}</strong> — ${escapeHtml(s.application.positioning)}</p>
+            <p class="small muted">Thesis: ${escapeHtml(s.application.thesis_title)}</p>
+            <p class="small muted">Python ${escapeHtml(s.application.python)} · ${escapeHtml(s.application.platform)}</p>
+          </div>
+        </div>`;
+    } catch (e) {
+      output.innerHTML = `<div class="card card-pad"><p class="muted">${escapeHtml(e.message)}</p></div>`;
+    }
+  });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Upload · AInsight{% endblock %}
+{% block heading %}Upload{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h2>Add your data</h2>
+  <p>Upload CSV or Excel files and start exploring your business data.</p>
+</div>
+
+<div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose a file to upload">
+  <div class="glyph">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+      <path d="M12 16.5V4m0 0L7.5 8.5M12 4l4.5 4.5"/>
+      <path d="M3.5 15v4a1.5 1.5 0 0 0 1.5 1.5h14a1.5 1.5 0 0 0 1.5-1.5v-4"/>
+    </svg>
+  </div>
+  <h3>Drop a file here</h3>
+  <p>or choose one from your computer</p>
+  <button class="btn btn-primary" id="browse" type="button">Choose file</button>
+  <input type="file" id="file-input" accept=".csv,.xlsx,.xls,.tsv" hidden>
+  <div class="formats">CSV, TSV, XLSX and XLS · up to 50 MB</div>
+</div>
+
+<div class="card" id="result" hidden style="margin-top:var(--sp-5)">
+  <div class="card-head"><h3 id="result-title">Processing</h3><span class="tag" id="result-status"></span></div>
+  <div class="card-pad">
+    <div class="upload-progress" id="progress"><div class="fill" id="progress-fill"></div></div>
+    <div class="file-summary" id="summary"></div>
+    <div id="detail"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  'use strict';
+  const { api, integer, bytes, escapeHtml, toast, renderTable } = AInsight;
+  const dropzone = document.getElementById('dropzone');
+  const input = document.getElementById('file-input');
+  const result = document.getElementById('result');
+  const fill = document.getElementById('progress-fill');
+
+  document.getElementById('browse').addEventListener('click', () => input.click());
+  dropzone.addEventListener('click', (e) => { if (e.target === dropzone) input.click(); });
+  dropzone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); } });
+  input.addEventListener('change', () => { if (input.files[0]) upload(input.files[0]); });
+
+  ['dragenter', 'dragover'].forEach((type) => dropzone.addEventListener(type, (e) => {
+    e.preventDefault(); dropzone.classList.add('dragging');
+  }));
+  ['dragleave', 'drop'].forEach((type) => dropzone.addEventListener(type, (e) => {
+    e.preventDefault(); dropzone.classList.remove('dragging');
+  }));
+  dropzone.addEventListener('drop', (e) => {
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) upload(file);
+  });
+
+  async function upload(file) {
+    result.hidden = false;
+    document.getElementById('result-title').textContent = file.name;
+    document.getElementById('result-status').textContent = 'Uploading';
+    document.getElementById('result-status').className = 'tag tag-accent';
+    document.getElementById('summary').innerHTML = '';
+    document.getElementById('detail').innerHTML = '';
+    fill.style.width = '0%';
+
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const data = await api.upload('/api/upload', formData, (pct) => { fill.style.width = pct + '%'; });
+      fill.style.width = '100%';
+      show(data, file);
+    } catch (e) {
+      document.getElementById('result-status').textContent = 'Rejected';
+      document.getElementById('result-status').className = 'tag tag-danger';
+      document.getElementById('detail').innerHTML = `<p class="muted">${escapeHtml(e.message)}</p>`;
+    }
+  }
+
+  function show(data, file) {
+    const d = data.dataset, p = data.profile;
+    document.getElementById('result-status').textContent = 'Ready for analysis';
+    document.getElementById('result-status').className = 'tag tag-ready';
+    const missing = (p.quality && p.quality.missing_percentage) || 0;
+    document.getElementById('summary').innerHTML = `
+      <div class="item"><span class="k">Rows</span><span class="v">${integer(d.row_count)}</span></div>
+      <div class="item"><span class="k">Columns</span><span class="v">${integer(d.column_count)}</span></div>
+      <div class="item"><span class="k">File size</span><span class="v">${bytes(d.size_bytes || file.size)}</span></div>
+      <div class="item"><span class="k">Missing values</span><span class="v">${missing}%</span></div>
+      <div class="item"><span class="k">Duplicate rows</span><span class="v">${integer((p.quality || {}).duplicate_rows || 0)}</span></div>
+      ${d.sheet_name ? `<div class="item"><span class="k">Sheet</span><span class="v">${escapeHtml(d.sheet_name)}</span></div>` : ''}`;
+
+    const columns = (p.columns || []).map((c) => ({
+      Column: c.name, Type: c.semantic_type, 'Missing %': c.null_percentage,
+      Distinct: c.unique_count, Sample: (c.sample_values || []).slice(0, 3).join(', '),
+    }));
+    const sheets = (p.file_meta && p.file_meta.sheets) || null;
+    document.getElementById('detail').innerHTML = `
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:1.25rem 0">
+        <a class="btn btn-primary" href="/chat?dataset=${d.id}">Ask AInsight</a>
+        <a class="btn" href="/datasets/${d.id}">View profile</a>
+        <a class="btn btn-ghost" href="/upload">Upload another</a>
+      </div>
+      ${sheets && sheets.length > 1 ? `<p class="small muted">This workbook has ${sheets.length} sheets: ${escapeHtml(sheets.join(', '))}. The first sheet was loaded; upload again and name another sheet to analyse it.</p>` : ''}
+      <h3 style="margin:1rem 0 .5rem;font-size:var(--step-0)">Columns detected</h3>
+      ${renderTable(['Column', 'Type', 'Missing %', 'Distinct', 'Sample'], columns, 100)}`;
+    toast('Dataset ready for analysis.', 'success');
+  }
+})();
+</script>
+{% endblock %}

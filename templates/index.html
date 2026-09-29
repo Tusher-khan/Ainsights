@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AInsight — Ask your data. Get intelligent insights.</title>
+  <meta name="description" content="AInsight turns business questions in plain language into verified analysis of your CSV, Excel and database data.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232F5AE0'/><path d='M9 22 16 10l7 12' stroke='white' stroke-width='2.4' fill='none' stroke-linejoin='round'/><circle cx='16' cy='10' r='2.6' fill='white'/></svg>">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('ainsight-theme');
+        if (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches) saved = 'dark';
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+<a class="skip-link" href="#hero">Skip to content</a>
+
+<div class="landing">
+  <nav class="landing-nav">
+    <a class="brand" href="/">
+      <svg class="brand-mark" width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="8" fill="var(--accent)"/>
+        <path d="M8.5 22.5 16 9.5l7.5 13" stroke="#fff" stroke-width="2.2" fill="none" stroke-linejoin="round"/>
+        <circle cx="16" cy="9.5" r="2.8" fill="#fff"/>
+        <circle cx="8.5" cy="22.5" r="1.9" fill="#fff" opacity=".7"/>
+        <circle cx="23.5" cy="22.5" r="1.9" fill="#fff" opacity=".7"/>
+      </svg>
+      <span class="brand-name">A<b>Insight</b><span class="brand-sub">AI-Powered Business Analytics</span></span>
+    </a>
+    <div class="actions">
+      <a class="btn btn-ghost" href="/system">How it works</a>
+      <a class="btn btn-primary" href="/dashboard">Open AInsight</a>
+    </div>
+  </nav>
+
+  <header class="hero" id="hero">
+    <h1>Turn data into insight</h1>
+    <p>Ask questions. Analyze faster. Understand your business.</p>
+    <p class="support">Your AI-powered business analytics assistant. No SQL, no spreadsheets formulas — just the question you actually want answered.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="/chat">Start analyzing</a>
+      <a class="btn" href="/upload">Upload dataset</a>
+    </div>
+  </header>
+
+  <!-- The hero shows the product's real claim: a question becomes a figure you can audit. -->
+  <section class="hero-demo" aria-label="Example analysis">
+    <div class="ask">
+      <span id="typed-question">Which region has the highest profit?</span><span class="caret" aria-hidden="true"></span>
+    </div>
+    <div class="answer">
+      <span class="figure" id="demo-figure">—</span>
+      <span class="caption" id="demo-caption">computed from your dataset, not estimated</span>
+    </div>
+    <div class="strip">
+      <span class="check" style="color:var(--verified)">✓ Query validated</span>
+      <span class="check" style="color:var(--verified)">✓ Result verified</span>
+      <span class="muted" id="demo-op">SUM(Profit) GROUP BY Region</span>
+    </div>
+  </section>
+
+  <section aria-label="Features">
+    <div class="feature-grid">
+      <article class="card feature">
+        <div class="glyph"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8 8 0 0 1-8 8H7l-4 3v-5.5A8 8 0 1 1 21 12Z"/></svg></div>
+        <h3>Natural language analytics</h3>
+        <p>Ask in the words you already use. AInsight works out the measure, the grouping and the filters from your dataset's real columns.</p>
+      </article>
+      <article class="card feature">
+        <div class="glyph"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
+        <h3>Metadata-aware retrieval</h3>
+        <p>Column descriptions, types and value samples are indexed and retrieved per question. Your data rows are never sent to a language model.</p>
+      </article>
+      <article class="card feature">
+        <div class="glyph"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div>
+        <h3>Text-to-SQL, checked twice</h3>
+        <p>Generated SQL is parsed, security-validated and run on a read-only connection. Anything that is not an analytical read is rejected.</p>
+      </article>
+      <article class="card feature">
+        <div class="glyph"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M4 9h16M9 9v10"/></svg></div>
+        <h3>CSV and Excel analytics</h3>
+        <p>Upload a file and it is profiled immediately: types, missing values, duplicates, distributions and questions worth asking.</p>
+      </article>
+      <article class="card feature">
+        <div class="glyph"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V9M10 20V4M16 20v-7M22 20H2"/></svg></div>
+        <h3>Interactive visualizations</h3>
+        <p>Charts are built from executed results only. The chart type follows the shape of the answer, and falls back to a table when nothing fits.</p>
+      </article>
+      <article class="card feature">
+        <div class="glyph"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 3v6c0 4.5-3.2 7.9-8 9-4.8-1.1-8-4.5-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></div>
+        <h3>Validated results</h3>
+        <p>Every answer carries its source: the dataset, the columns, the operation and the checks it passed. If the data cannot answer, AInsight says so.</p>
+      </article>
+    </div>
+  </section>
+
+  <footer class="landing-foot">
+    <p><strong>AInsight</strong> — Ask your data. Get intelligent insights.</p>
+    <p>Research prototype accompanying the thesis “Design and Development of a Hybrid AI-Powered Data Analytics Chatbot for Natural Language Querying over Databases and Excel Files”.</p>
+  </footer>
+</div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>
+// The hero runs a real query against whatever dataset exists, so the figure
+// shown is genuine. With no data yet, it invites an upload instead of faking one.
+(async () => {
+  const figure = document.getElementById('demo-figure');
+  const caption = document.getElementById('demo-caption');
+  const operation = document.getElementById('demo-op');
+  const question = document.getElementById('typed-question');
+  try {
+    const datasets = await AInsight.api.get('/api/datasets');
+    if (!datasets.datasets || !datasets.datasets.length) {
+      figure.textContent = 'No data yet';
+      figure.style.fontSize = 'var(--step-2)';
+      caption.textContent = 'upload a CSV or Excel file and this becomes your real number';
+      operation.textContent = 'waiting for a dataset';
+      return;
+    }
+    const payload = await AInsight.api.post('/api/chat', { question: question.textContent });
+    if (payload.headline) {
+      figure.textContent = payload.headline.value;
+      caption.textContent = `${payload.headline.label} · ${payload.source.dataset}`;
+    } else {
+      figure.textContent = AInsight.integer((payload.result || {}).row_count || 0);
+      caption.textContent = `rows from ${(payload.source || {}).dataset || 'your data'}`;
+    }
+    operation.textContent = (payload.source || {}).operation || '';
+  } catch (e) {
+    figure.textContent = 'Ready';
+    figure.style.fontSize = 'var(--step-2)';
+    caption.textContent = 'open AInsight to run your first analysis';
+  }
+})();
+</script>
+</body>
+</html>

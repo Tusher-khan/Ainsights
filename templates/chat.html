@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}AI Chat · AInsight{% endblock %}
+{% block heading %}AInsight AI Analytics{% endblock %}
+
+{% block topbar %}
+<button class="btn btn-ghost btn-sm" id="new-chat">New analysis</button>
+{% endblock %}
+
+{% block content %}
+<div class="chat-shell" id="chat-shell">
+
+  <div class="chat-bar">
+    <label class="visually-hidden" for="dataset-select">Dataset</label>
+    <select class="select" id="dataset-select" aria-label="Dataset to analyse"></select>
+    <span class="tag" id="dataset-status"><span class="dot"></span> Checking</span>
+    <div class="chat-bar-spacer"></div>
+    <button class="btn btn-ghost btn-sm" id="clear-chat">Clear conversation</button>
+    <a class="btn btn-sm" href="/upload">Upload dataset</a>
+  </div>
+
+  <div class="chat-scroll" id="chat-scroll">
+    <div class="chat-inner" id="chat-inner">
+      <section class="welcome" id="welcome">
+        <h2>How can I help you analyse your data?</h2>
+        <p>Ask AInsight a question about your business data. Every number comes from a real
+           calculation on your dataset, and you can see exactly how it was produced.</p>
+        <div class="suggestions" id="suggestions" role="list"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="composer-wrap">
+    <form class="composer" id="composer">
+      <div class="followups" id="followups"></div>
+      <div class="composer-box">
+        <label class="visually-hidden" for="question">Your question</label>
+        <textarea id="question" rows="1" placeholder="Ask about your data — for example, which region has the highest profit?"></textarea>
+        <button class="btn btn-primary btn-icon" type="submit" id="send" aria-label="Send question">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
+            <path d="M4 12h15M13 6l6 6-6 6"/>
+          </svg>
+        </button>
+      </div>
+      <div class="composer-hint">
+        <span>Enter to send · Shift + Enter for a new line</span>
+        <span id="engine-hint"></span>
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock %}

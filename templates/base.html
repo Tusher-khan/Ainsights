@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}AInsight{% endblock %}</title>
+  <meta name="description" content="AInsight — ask your data, get intelligent insights.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/datasets.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232F5AE0'/><path d='M9 22 16 10l7 12' stroke='white' stroke-width='2.4' fill='none' stroke-linejoin='round'/><circle cx='16' cy='10' r='2.6' fill='white'/></svg>">
+  <script>
+    // Applied before paint so the theme never flashes.
+    (function () {
+      try {
+        var saved = localStorage.getItem('ainsight-theme');
+        if (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches) saved = 'dark';
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+      } catch (e) {}
+    })();
+  </script>
+  {% block head %}{% endblock %}
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+
+{% macro icon(name) -%}
+  {%- if name == 'dashboard' -%}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="7" height="8" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="11" width="7" height="10" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+  {%- elif name == 'chat' -%}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 12a8 8 0 0 1-8 8H7l-4 3v-5.5A8 8 0 1 1 21 12Z"/><path d="M8.5 11.5h7M8.5 14.5h4"/></svg>
+  {%- elif name == 'datasets' -%}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/><path d="M4 11.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+  {%- elif name == 'history' -%}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+  {%- elif name == 'evaluation' -%}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20V9M10 20V4M16 20v-7M22 20H2"/></svg>
+  {%- elif name == 'system' -%}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg>
+  {%- elif name == 'upload' -%}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 16V4m0 0L8 8m4-4 4 4"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+  {%- endif -%}
+{%- endmacro %}
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar-head">
+      <a class="brand" href="/dashboard">
+        <svg class="brand-mark" width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
+          <rect width="32" height="32" rx="8" fill="var(--accent)"/>
+          <path d="M8.5 22.5 16 9.5l7.5 13" stroke="#fff" stroke-width="2.2" fill="none" stroke-linejoin="round"/>
+          <circle cx="16" cy="9.5" r="2.8" fill="#fff"/>
+          <circle cx="8.5" cy="22.5" r="1.9" fill="#fff" opacity=".7"/>
+          <circle cx="23.5" cy="22.5" r="1.9" fill="#fff" opacity=".7"/>
+        </svg>
+        <span class="brand-name">A<b>Insight</b>
+          <span class="brand-sub">AI-Powered Business Analytics</span>
+        </span>
+      </a>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item {% if active == 'dashboard' %}active{% endif %}" href="/dashboard" data-tip="Dashboard">{{ icon('dashboard') }}<span>Dashboard</span></a>
+      <a class="nav-item {% if active == 'chat' %}active{% endif %}" href="/chat" data-tip="AI Chat">{{ icon('chat') }}<span>AI Chat</span></a>
+      <a class="nav-item {% if active == 'datasets' %}active{% endif %}" href="/datasets" data-tip="Datasets">{{ icon('datasets') }}<span>Datasets</span></a>
+      <a class="nav-item {% if active == 'history' %}active{% endif %}" href="/history" data-tip="Query history">{{ icon('history') }}<span>Query History</span></a>
+
+      <div class="nav-section">Research</div>
+      <a class="nav-item {% if active == 'evaluation' %}active{% endif %}" href="/evaluation" data-tip="Evaluation">{{ icon('evaluation') }}<span>Evaluation</span></a>
+      <a class="nav-item {% if active == 'system' %}active{% endif %}" href="/system" data-tip="System">{{ icon('system') }}<span>System</span></a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <button class="btn btn-ghost btn-sm" id="sidebar-toggle" aria-label="Collapse sidebar" aria-expanded="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+        <span class="label">Collapse</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="btn btn-ghost btn-icon" id="drawer-toggle" aria-label="Open navigation" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <h1>{% block heading %}{% endblock %}</h1>
+      <div class="topbar-actions">
+        {% block topbar %}{% endblock %}
+        <span class="tag" id="mode-badge" title="Response mode">…</span>
+        <button class="btn btn-ghost btn-icon theme-toggle" id="theme-toggle" aria-label="Switch colour theme">
+          <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="content" id="main-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+<div class="drawer-scrim" id="drawer-scrim" hidden></div>
+<div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

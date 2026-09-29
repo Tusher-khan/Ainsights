@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · AInsight{% endblock %}
+{% block heading %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="welcome-band">
+  <div class="copy">
+    <h2>Welcome to AInsight</h2>
+    <p>Turn your business data into actionable insights using natural language.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="/chat">Ask AInsight</a>
+      <a class="btn" href="/upload">Upload dataset</a>
+    </div>
+  </div>
+</section>
+
+<div class="grid grid-3" id="kpis">
+  <div class="card kpi"><div class="skeleton" style="width:60%"></div></div>
+  <div class="card kpi"><div class="skeleton" style="width:60%"></div></div>
+  <div class="card kpi"><div class="skeleton" style="width:60%"></div></div>
+</div>
+
+<div class="section-head">
+  <h3>Your datasets</h3>
+  <a href="/datasets">Manage all</a>
+</div>
+<div class="dataset-grid" id="dataset-grid"></div>
+
+<div class="section-head">
+  <h3>Recent questions</h3>
+  <a href="/history">Full history</a>
+</div>
+<div class="card" id="activity"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/datasets.js') }}"></script>
+{% endblock %}
